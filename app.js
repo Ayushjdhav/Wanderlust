@@ -7,7 +7,8 @@ const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const wrapAsync = require("./utils/wrapAsync");
 const ExpressError = require("./utils/ExpressError");
-const { listingSchema } = require("./schema");
+const { listingSchema, reviewSchema } = require("./schema");
+const Review = require("./models/review.js");
 
 
 
@@ -38,14 +39,24 @@ app.get("/", (req, res) => {
 
 
 const validateListing = (req, res, next) => {
- let {err} = listingSchema.validateAsync(req.body);
-if(error){
-    let errMsg = error.details.map(el => el.message).join(",");
-    throw new ExpressError(400, errMsg);
-}else{
-    next();
-}
-}
+    let { error } = listingSchema.validate(req.body);
+    if (error) {
+        let errMsg = error.details.map(el => el.message).join(",");
+        throw new ExpressError(400, errMsg);
+    } else {
+        next();
+    }
+};
+
+const validateReview = (req, res, next) => {
+    let { error } = reviewSchema.validate(req.body);
+    if (error) {
+        let errMsg = error.details.map(el => el.message).join(",");
+        throw new ExpressError(400, errMsg);
+    } else {
+        next();
+    }
+};
 
 //INDEX ROUTE
 app.get("/listings", wrapAsync(async (req, res) => {
@@ -88,7 +99,7 @@ app.get("/listings/:id", wrapAsync(async (req, res) => {
         throw new ExpressError(404, "Page Not Found");
     }
 
-    const listing = await Listing.findById(id);
+    const listing = await Listing.findById(id).populate("reviews");
 
     // Listing not found in DB
     if (!listing) {
@@ -102,36 +113,36 @@ app.get("/listings/:id", wrapAsync(async (req, res) => {
 app.post("/listings",
     validateListing,
     wrapAsync(async (req, res, next) => {
-   
 
-    const newListing = new Listing(req.body.listing);
-    await newListing.save();
-    res.redirect("/listings");
-}));
-   
+
+        const newListing = new Listing(req.body.listing);
+        await newListing.save();
+        res.redirect("/listings");
+    }));
+
 
 
 
 //UPDATE ROUTE
 app.put("/listings/:id",
     validateListing, wrapAsync(async (req, res) => {
-    let { id } = req.params;
+        let { id } = req.params;
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        throw new ExpressError(404, "Page Not Found");
-    }
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            throw new ExpressError(404, "Page Not Found");
+        }
 
-    const listing = await Listing.findByIdAndUpdate(
-        id,
-        { ...req.body.listing }
-    );
+        const listing = await Listing.findByIdAndUpdate(
+            id,
+            { ...req.body.listing }
+        );
 
-    if (!listing) {
-        throw new ExpressError(404, "Page Not Found");
-    }
+        if (!listing) {
+            throw new ExpressError(404, "Page Not Found");
+        }
 
-    res.redirect(`/listings/${id}`);
-}));
+        res.redirect(`/listings/${id}`);
+    }));
 
 //DELETE ROUTE
 app.delete("/listings/:id", wrapAsync(async (req, res) => {
@@ -153,6 +164,40 @@ app.delete("/listings/:id", wrapAsync(async (req, res) => {
 app.get("/test", (req, res) => {
     throw new Error("Testing Error");
 });
+
+// REVIEW
+// Post Review Route
+app.post("/listings/:id/reviews", validateReview, wrapAsync(async (req, res) => {
+    let listing = await Listing.findById(req.params.id);
+    let newReview = new Review(req.body.review);
+
+    listing.reviews.push(newReview);
+    await newReview.save();
+    await listing.save();
+
+    console.log("new review save");
+    res.redirect(`/listings/${listing._id}`);
+
+}));
+
+//DELETE REVIEW ROUTE
+app.delete(
+    "/listings/:id/reviews/:reviewId",
+    wrapAsync(async (req, res) => {
+
+        let { id, reviewId } = req.params;
+
+      
+
+        await Listing.findByIdAndUpdate(id, {
+            $pull: { reviews: reviewId }
+        });
+
+        await Review.findByIdAndDelete(reviewId);
+
+        res.redirect(`/listings/${id}`);
+    })
+);
 // app.get("/testListing",async (req, res) => {
 //     let sampleListing = new Listing({
 //         title : "My New Villa",
@@ -175,8 +220,11 @@ app.use((req, res, next) => {
 
 app.use((err, req, res, next) => {
     let { statusCode = 500, message = "Something went wrong!" } = err;
-    res.status(statusCode).render("error.ejs", {message}); 
-    // res.status(statusCode).send(message);
+
+    err.statusCode = statusCode;
+    err.message = message;
+
+    res.status(statusCode).render("error", { message });
 });
 
 

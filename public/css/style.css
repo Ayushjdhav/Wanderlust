@@ -64,7 +64,7 @@ body{
 
 
 /* CARDS */
-.card{
+.listing-card{
     border:none !important;
     margin-bottom: 2rem;
 }
@@ -75,13 +75,13 @@ body{
     object-fit: cover !important;
 }
 
-.card-body{
+.card-body .listing-card{
     padding: 0 !important;
 }
 
-.card-body{
+/* .card-body{
     padding: 0 !important;
-}
+} */
 .card-text p {
     font-weight:400 !important;
 }
@@ -127,3 +127,6 @@ body{
     padding-right: 0;
 
 }
+
+
+/* REVIEW CARD */

@@ -9,7 +9,7 @@ create New Listing
 <div class="row row-cols-lg-3 row-cols-md-3 row-cols-sm-1 ">
 <% for(let listing of allListings){    %>
     <a href="/listings/<%= listing._id %>"class="listing-links" >
-         <div class="card col" >
+         <div class="card col listing-card" >
   <img src="<%=  listing.image.url %>"
    class="card-img-top"
     alt="listing_image"
@@ -18,7 +18,7 @@ create New Listing
 
   <div class="card-body">
     <p class="card-text"> <b> <%= listing.title %> </b>  <br>
-     <li>  &#8377; <%= listing.price.toLocaleString('en-IN') %> / Night </li>
+       &#8377; <%= listing.price.toLocaleString('en-IN') %> / Night 
     </p>
   </div>
 </div>
@@ -32,13 +32,13 @@ create New Listing
 
     
 
-    <ul>
+    <!-- <ul>
    <% for(let listing of allListings){
         %>
         <li><a href="/listings/<%= listing._id %>"> <%= listing.title %></a></li>
    <% } %>
    
-</ul>
+</ul> -->
 
 
 
