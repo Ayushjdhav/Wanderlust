@@ -31,13 +31,14 @@ router.post("/", validateReview, wrapAsync(async (req, res) => {
     await listing.save();
 
     console.log("new review save");
+     req.flash("success", "New Review created!");
     res.redirect(`/listings/${listing._id}`);
 
 }));
 
 //DELETE REVIEW ROUTE
 router.delete(
-    "/listings/:id/reviews/:reviewId",
+    "/:reviewId",
     wrapAsync(async (req, res) => {
 
         let { id, reviewId } = req.params;
@@ -49,7 +50,7 @@ router.delete(
         });
 
         await Review.findByIdAndDelete(reviewId);
-
+ req.flash("success", "Review Deleted!");
         res.redirect(`/listings/${id}`);
     })
 );

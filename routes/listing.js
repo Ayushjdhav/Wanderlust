@@ -62,6 +62,10 @@ router.get("/:id", wrapAsync(async (req, res) => {
     }
 
     const listing = await Listing.findById(id).populate("reviews");
+    if(!listing){
+        req.flash("error", "Listing you requested for does not exits!");
+       return res.redirect("/listings");
+    }
 
     // Listing not found in DB
     if (!listing) {
@@ -79,6 +83,7 @@ router.post("/",
 
         const newListing = new Listing(req.body.listing);
         await newListing.save();
+        req.flash("success", "New Listing created!");
         res.redirect("/listings");
     }));
 
@@ -102,7 +107,7 @@ router.put("/:id",
         if (!listing) {
             throw new ExpressError(404, "Page Not Found");
         }
-
+ req.flash("success", " Listing Updated!");
         res.redirect(`/listings/${id}`);
     }));
 
@@ -119,7 +124,7 @@ router.delete("/:id", wrapAsync(async (req, res) => {
     if (!deletedListing) {
         throw new ExpressError(404, "Page Not Found");
     }
-
+ req.flash("success", " Listing Deleted!");
     res.redirect("/listings");
 }));
 
