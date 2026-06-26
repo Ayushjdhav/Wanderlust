@@ -1,22 +1,14 @@
 const express = require("express");
 const router = express.Router();
 const wrapAsync = require("../utils/wrapAsync");
-const ExpressError = require("../utils/ExpressError");
-const { listingSchema } = require("../schema");
 const Listing = require("../models/listing.js");
+const {isLoggedIn, isOwner, validateListing} = require("../middleware.js");
+const ExpressError = require("../utils/ExpressError");
 
 
 const mongoose = require("mongoose");
 
-const validateListing = (req, res, next) => {
-    let { error } = listingSchema.validate(req.body);
-    if (error) {
-        let errMsg = error.details.map(el => el.message).join(",");
-        throw new ExpressError(400, errMsg);
-    } else {
-        next();
-    }
-};
+
 
 
 
@@ -27,7 +19,7 @@ router.get("/", wrapAsync(async (req, res) => {
 }));
 
 //NEW ROUTE
-router.get("/new", (req, res) => {
+router.get("/new", isLoggedIn, (req, res) => {
     res.render("listings/new.ejs");
 
 
@@ -35,7 +27,9 @@ router.get("/new", (req, res) => {
 
 
 //EDIT ROUTE
-router.get("/:id/edit", wrapAsync(async (req, res) => {
+router.get("/:id/edit",isLoggedIn,
+     isOwner,
+      wrapAsync(async (req, res) => {
     let { id } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -61,7 +55,14 @@ router.get("/:id", wrapAsync(async (req, res) => {
         throw new ExpressError(404, "Page Not Found");
     }
 
-    const listing = await Listing.findById(id).populate("reviews");
+    const listing = await Listing.findById(id)
+    .populate({
+        path:"reviews",
+        populate:{
+            path: "author",
+        },
+    });
+    console.log("Listing Owner:", listing.owner);
     if(!listing){
         req.flash("error", "Listing you requested for does not exits!");
        return res.redirect("/listings");
@@ -78,10 +79,13 @@ router.get("/:id", wrapAsync(async (req, res) => {
 //CREATE ROUTE
 router.post("/",
     validateListing,
+    isLoggedIn,
+    
     wrapAsync(async (req, res) => {
 
 
         const newListing = new Listing(req.body.listing);
+        newListing.owner = req.user._id;
         await newListing.save();
         req.flash("success", "New Listing created!");
         res.redirect("/listings");
@@ -92,7 +96,9 @@ router.post("/",
 
 //UPDATE ROUTE
 router.put("/:id",
-    validateListing, wrapAsync(async (req, res) => {
+    validateListing,isLoggedIn,
+    isOwner,
+     wrapAsync(async (req, res) => {
         let { id } = req.params;
 
         if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -112,7 +118,9 @@ router.put("/:id",
     }));
 
 //DELETE ROUTE
-router.delete("/:id", wrapAsync(async (req, res) => {
+router.delete("/:id",isLoggedIn,
+     isOwner,
+      wrapAsync(async (req, res) => {
     let { id } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
