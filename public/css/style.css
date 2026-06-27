@@ -130,3 +130,13 @@ body{
 
 
 /* REVIEW CARD */
+
+
+
+/* MAP */
+#map {
+    height: 400px;
+    width: 100%;
+    border-radius: 15px;
+    margin-top: 1rem;
+}
