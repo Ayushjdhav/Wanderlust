@@ -16,8 +16,8 @@ module.exports.signup = async (req, res, next) => {
                 return next(err);
             }
             req.flash("success", "Welcome to Wanderlust!");
-           let redirectUrl = res.locals.redirectUrl || "/listings";
-res.redirect(redirectUrl);
+            let redirectUrl = res.locals.redirectUrl || "/listings";
+            res.redirect(redirectUrl);
         });
 
     } catch (e) {
@@ -34,14 +34,14 @@ module.exports.renderLoginForm = (req, res) => {
 
 //LOGIN
 module.exports.login = async (req, res) => {
-        req.flash("success", "Welcome back to Wanderlust!");
-       let redirectUrl = res.locals.redirectUrl || "/listings";
-res.redirect(redirectUrl);
+    req.flash("success", "Welcome back to Wanderlust!");
+    let redirectUrl = res.locals.redirectUrl || "/listings";
+    res.redirect(redirectUrl);
 
-    };
+};
 
-    //LOGOUT
- module.exports.logout =  (req, res, next) => {
+//LOGOUT
+module.exports.logout = (req, res, next) => {
     req.logout((err) => {
         if (err) {
             return next(err);

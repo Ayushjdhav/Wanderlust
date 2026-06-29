@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const reviewSchema = new Schema({
-    comment:String,
+    comment: String,
     rating: {
         type: Number,
         min: 1,
@@ -14,7 +14,7 @@ const reviewSchema = new Schema({
     },
     author: {
         type: Schema.Types.ObjectId,
-        ref:"User",
+        ref: "User",
     }
 });
 

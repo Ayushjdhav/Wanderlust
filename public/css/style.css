@@ -1,142 +1,789 @@
+/* ===========================================
+            GLOBAL STYLES
+=========================================== */
 
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-body{
-    font-family: "Plus-jakarta-Sans", sans-serif !important;
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: "Plus Jakarta Sans", sans-serif !important;
     display: flex;
     flex-direction: column;
-    min-height:100vh;
-   
+    min-height: 100vh;
+    background: #ffffff;
+    color: #222;
 }
 
-.container{
-    flex:1;
+.container {
+    flex: 1;
+    padding-top: 1rem;
+    padding-bottom: 2rem;
 }
 
-/* NAVBAR  */
-.navbar{
-    height: 5rem;
-    background-color:#fff;
+img {
+    max-width: 100%;
+    height: auto;
 }
 
-.fa-compass{
-    color:#fe424d;
+::selection {
+    background: #fe424d;
+    color: #fff;
+}
+
+/* ===========================================
+                NAVBAR
+=========================================== */
+
+.navbar {
+    background: #fff !important;
+    min-height: 5rem;
+    border-bottom: 1px solid #e5e5e5;
+    padding: .6rem 0;
+    z-index: 1000;
+}
+
+.navbar-brand {
+    color: #fe424d !important;
     font-size: 2rem;
 }
 
-.nav-link{
-    color:#222222 !important;
+.fa-compass {
+    color: #fe424d;
+    font-size: 2rem;
 }
 
-/* FOOTER */
+.nav-link {
+    color: #222 !important;
+    font-weight: 500;
+    transition: .3s;
+}
+
+.nav-link:hover {
+    color: #fe424d !important;
+}
+
+.navbar-toggler {
+    border: none;
+}
+
+.navbar-toggler:focus {
+    box-shadow: none;
+}
+
+/* ===========================================
+                SEARCH BAR
+=========================================== */
+
+.search-form {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+}
+
+.search-inp {
+    width: 22rem;
+    border-radius: 999px;
+    padding: .65rem 1rem;
+    border: 1px solid #ddd;
+    transition: .3s;
+}
+
+.search-inp:focus {
+    border-color: #fe424d;
+    box-shadow: 0 0 0 .2rem rgba(254, 66, 77, .15);
+}
+
+.btn-search {
+    background: #fe424d;
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    padding: .65rem 1.3rem;
+    transition: .3s;
+}
+
+.btn-search:hover {
+    background: #e63946;
+    color: #fff;
+}
+
+.btn-outline-secondary {
+    border-radius: 999px;
+}
+
+/* ===========================================
+                    FOOTER
+=========================================== */
+
+.f-info {
+    background: #ebebeb;
+    min-height: 8rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 1rem;
+    gap: 1rem;
+}
+
+.f-info-links,
+.f-info-socials,
+.f-info-brand {
+    flex: 1;
+    min-width: 250px;
+}
+
 .f-info-links a {
+    color: #222;
     text-decoration: none;
-    color:#222222 ;
 }
 
 .f-info-links a:hover {
     text-decoration: underline;
 }
 
-.f-info-links, .f-info-socials,
-.f-info-brand{
-    width:100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-}
-
-.f-info-socials i{
+.f-info-socials i {
+    font-size: 1.25rem;
     margin-right: 1rem;
-     font-size:1.2rem
+    transition: .3s;
 }
 
-.f-info{
-    height: 8rem;
-    background-color:#ebebeb;
-    display:flex;
-    flex-wrap:wrap;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    align-content: space-evenly;
+.f-info-socials i:hover {
+    color: #fe424d;
+    cursor: pointer;
 }
 
+/* ===========================================
+            RESPONSIVE NAVBAR
+=========================================== */
 
-/* CARDS */
-.listing-card{
-    border:none !important;
-    margin-bottom: 2rem;
+@media(max-width:991px) {
+
+    .navbar {
+        padding: 1rem;
+    }
+
+    .navbar-nav {
+        text-align: center;
+        margin-top: 1rem;
+    }
+
+    .search-form {
+        width: 100%;
+        flex-direction: column;
+        margin: 1rem 0;
+    }
+
+    .search-inp,
+    .btn-search,
+    .search-form .btn-outline-secondary {
+        width: 100%;
+    }
+
+}
+
+@media(max-width:576px) {
+
+    .navbar-brand {
+        font-size: 1.8rem;
+    }
+
+    .fa-compass {
+        font-size: 1.8rem;
+    }
+
+}
+
+/* ===========================================
+                LISTING CARDS
+=========================================== */
+
+.listing-links {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.listing-card {
+    border: none !important;
+    border-radius: 1rem;
+    overflow: hidden;
+    background: #fff;
+    transition: all .3s ease;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, .08);
+    height: 100%;
+}
+
+.listing-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, .15);
 }
 
 .card-img-top {
-    border-radius: 1rem !important;
-    width: 100% !important;
-    object-fit: cover !important;
+    width: 100%;
+    height: 18rem;
+    object-fit: cover;
+    border-radius: 1rem 1rem 0 0 !important;
 }
 
-.card-body .listing-card{
-    padding: 0 !important;
+.card-body {
+    padding: 1rem;
 }
 
-/* .card-body{
-    padding: 0 !important;
-} */
-.card-text p {
-    font-weight:400 !important;
+.card-title {
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: .4rem;
 }
 
-.listing-links{
+.card-text {
+    font-size: .95rem;
+    color: #444;
+}
+
+.card-img-overlay {
+    opacity: 0;
+    transition: .3s;
+}
+
+.card-img-overlay:hover {
+    opacity: .15;
+    background: #fff;
+}
+
+/* ===========================================
+                    FILTERS
+=========================================== */
+
+.filters-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+#filters {
+    display: flex;
+    gap: 1.5rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+    flex: 1;
+}
+
+#filters::-webkit-scrollbar {
+    display: none;
+}
+
+.filter {
+    min-width: 75px;
+    text-align: center;
+    flex-shrink: 0;
+    opacity: .7;
+    cursor: pointer;
+    transition: .3s;
+}
+
+.filter i {
+    font-size: 1.3rem;
+    margin-bottom: .4rem;
+}
+
+.filter p {
+    font-size: .82rem;
+    margin: 0;
+}
+
+.filter:hover {
+    opacity: 1;
+    color: #fe424d;
+}
+
+.filter.active {
+    opacity: 1;
+    color: #fe424d;
+    border-bottom: 2px solid #fe424d;
+    padding-bottom: .4rem;
+}
+
+/* ===========================================
+                GST TOGGLE
+=========================================== */
+
+.tax-toggle {
+    border: 1px solid #ddd;
+    border-radius: 1rem;
+    padding: .8rem 1rem;
+    background: #fff;
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+.tax-info {
+    display: none;
+    color: #198754;
+    font-weight: 600;
+}
+
+/* ===========================================
+                    BUTTONS
+=========================================== */
+
+.btn {
+    border-radius: 12px;
+    transition: .3s;
+}
+
+.btn:hover {
+    transform: scale(1.03);
+}
+
+.add-btn,
+.edit-btn {
+    background: #fe424d !important;
+    color: #fff !important;
+    border: none !important;
+}
+
+.add-btn:hover,
+.edit-btn:hover {
+    background: #e63946 !important;
+}
+
+.btns {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
+}
+
+/* ===========================================
+                NEW / EDIT FORM
+=========================================== */
+
+.form-control,
+.form-select {
+    border-radius: 12px;
+    padding: .75rem 1rem;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #fe424d;
+    box-shadow: 0 0 0 .2rem rgba(254, 66, 77, .15);
+}
+
+.form-label {
+    font-weight: 600;
+}
+
+.card {
+    border-radius: 1rem;
+}
+
+/* ===========================================
+                    SHOW PAGE
+=========================================== */
+
+.show-card {
+    border: none;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, .08);
+}
+
+.show-img {
+    width: 100%;
+    height: 45vh;
+    object-fit: cover;
+}
+
+.review-card {
+    border-radius: 1rem;
+}
+
+/* ===========================================
+                    MAP
+=========================================== */
+
+#map {
+    width: 100%;
+    height: 400px;
+    border-radius: 1rem;
+    overflow: hidden;
+}
+
+/* ===========================================
+            RESPONSIVE DESIGN
+=========================================== */
+
+/* ---------- Tablets ---------- */
+
+@media (max-width: 992px) {
+
+    .card-img-top {
+        height: 16rem;
+    }
+
+    .filters-container {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .tax-toggle {
+        width: 100%;
+    }
+
+    .show-img {
+        height: 35vh;
+    }
+
+    #map {
+        height: 350px;
+    }
+
+}
+
+/* ---------- Mobile ---------- */
+
+@media (max-width:768px) {
+
+    .container {
+        padding: 1rem;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    h2 {
+        font-size: 1.8rem;
+    }
+
+    h3 {
+        font-size: 1.5rem;
+    }
+
+    .card-img-top {
+        height: 15rem;
+    }
+
+    .show-img {
+        height: 30vh;
+    }
+
+    .btns {
+        flex-direction: column;
+    }
+
+    .btns .btn,
+    .btns form {
+        width: 100%;
+    }
+
+    .btns form button {
+        width: 100%;
+    }
+
+    .filters-container {
+        gap: 1rem;
+    }
+
+    #filters {
+        width: 100%;
+    }
+
+    .tax-toggle {
+        width: 100%;
+    }
+
+    #map {
+        height: 300px;
+    }
+
+    .review-card {
+        margin-bottom: 1rem;
+    }
+
+    .f-info {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+}
+
+/* ---------- Small Phones ---------- */
+
+@media (max-width:576px) {
+
+    .container {
+        padding: .75rem;
+    }
+
+    .card-img-top {
+        height: 13rem;
+    }
+
+    .show-img {
+        height: 28vh;
+    }
+
+    .search-inp {
+        font-size: .9rem;
+    }
+
+    .filter {
+        min-width: 65px;
+    }
+
+    .filter i {
+        font-size: 1.15rem;
+    }
+
+    .filter p {
+        font-size: .72rem;
+    }
+
+    #map {
+        height: 260px;
+    }
+
+}
+
+/* ===========================================
+            UTILITIES
+=========================================== */
+
+.text-price {
+    color: #fe424d;
+    font-weight: 700;
+}
+
+.shadow-hover {
+    transition: .3s;
+}
+
+.shadow-hover:hover {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .15);
+}
+
+.rounded-xl {
+    border-radius: 1rem;
+}
+
+/* ===========================================
+            SCROLLBAR
+=========================================== */
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f5f5f5;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #cfcfcf;
+    border-radius: 20px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* ===========================================
+            FADE ANIMATION
+=========================================== */
+
+.listing-card {
+    animation: fadeUp .4s ease;
+}
+
+@keyframes fadeUp {
+
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+}
+
+/* ===========================================
+            IMAGE HOVER
+=========================================== */
+
+.card-img-top {
+    transition: transform .4s ease;
+}
+
+.listing-card:hover .card-img-top {
+    transform: scale(1.05);
+}
+
+/* ===========================================
+            REVIEW CARD
+=========================================== */
+
+.review-card {
+    border: none;
+    border-radius: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .08);
+    transition: .3s;
+}
+
+.review-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, .15);
+}
+
+/* ===========================================
+            FORM VALIDATION
+=========================================== */
+
+.was-validated .form-control:valid {
+    border-color: #198754;
+}
+
+.was-validated .form-control:invalid {
+    border-color: #dc3545;
+}
+
+/* ===========================================
+            LINKS
+=========================================== */
+
+a {
+    transition: .3s;
+}
+
+a:hover {
     text-decoration: none;
 }
 
-/* CARD EFFECT */
-.card-img-overlay{
-    opacity:0;
+/* ==========================
+        DARK MODE
+========================== */
+
+body.dark-mode {
+    background: #121212;
+    color: #f5f5f5;
 }
 
-.card-img-overlay:hover{
-    opacity:0.2;
-    background-color: white;
+/* Navbar */
+
+body.dark-mode .navbar {
+    background: #1b1b1b !important;
+    border-bottom: 1px solid #333;
 }
 
-/* NEW LISTING PAGE */
-.add-btn{
-     background-color:#fe424d !important;
-     border:none !important;
-    
+body.dark-mode .nav-link {
+    color: #f5f5f5 !important;
 }
 
-/* EDIT PAGE */
-.edit-btn{
- background-color:#fe424d !important;
-     border:none !important;
+body.dark-mode .navbar-brand {
+    color: #fe424d !important;
 }
 
-/* SHOW PAGE */
-.show-img{
-    height:30vh;
+/* Cards */
+
+body.dark-mode .listing-card,
+body.dark-mode .card {
+    background: #1f1f1f;
+    color: white;
 }
 
-.btns{
-    display:flex;
+body.dark-mode .card-text,
+body.dark-mode .card-title {
+    color: white;
 }
 
-.show-card{
-    padding-left: 0;
-    padding-right: 0;
+/* Forms */
 
+body.dark-mode .form-control,
+body.dark-mode .form-select {
+    background: #2b2b2b;
+    color: white;
+    border-color: #444;
 }
 
-
-/* REVIEW CARD */
-
-
-
-/* MAP */
-#map {
-    height: 400px;
-    width: 100%;
-    border-radius: 15px;
-    margin-top: 1rem;
+body.dark-mode .form-control::placeholder {
+    color: #bbb;
 }
+
+body.dark-mode .form-control:focus,
+body.dark-mode .form-select:focus {
+    background: #2b2b2b;
+    color: white;
+}
+
+/* Footer */
+
+body.dark-mode .f-info {
+    background: #1b1b1b;
+}
+
+body.dark-mode .f-info a {
+    color: white;
+}
+
+body.dark-mode .f-info-brand {
+    color: white;
+}
+
+/* Filters */
+
+body.dark-mode .filter {
+    color: white;
+}
+
+body.dark-mode .filter.active {
+    color: #fe424d;
+}
+
+body.dark-mode .tax-toggle {
+    background: #1f1f1f;
+    border-color: #444;
+}
+
+/* Buttons */
+
+body.dark-mode .btn-outline-secondary {
+    color: white;
+    border-color: white;
+}
+
+body.dark-mode .btn-outline-secondary:hover {
+    background: white;
+    color: black;
+}
+
+/* Inputs */
+
+body.dark-mode textarea,
+body.dark-mode input {
+    color: white;
+}
+
+/* Map */
+
+body.dark-mode #map {
+    border: 2px solid #333;
+}
+
+/* ===========================================
+            END
+=========================================== */

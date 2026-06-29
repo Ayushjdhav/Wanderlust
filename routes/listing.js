@@ -10,7 +10,7 @@ const {
 } = require("../middleware.js");
 
 const listingController = require("../controllers/listings.js");
-const {storage} = require("../cloudConfig.js");
+const { storage } = require("../cloudConfig.js");
 const upload = multer({ storage });
 
 // INDEX & CREATE ROUTES
@@ -38,7 +38,7 @@ router
     .put(
         isLoggedIn,
         isOwner,
-          upload.single("listing[image]"),
+        upload.single("listing[image]"),
         validateListing,
         wrapAsync(listingController.updateListing)
     )

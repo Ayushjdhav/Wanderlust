@@ -5,8 +5,24 @@ const axios = require("axios");
 
 
 module.exports.index = async (req, res) => {
-    const allListings = await Listing.find({});
-    res.render("listings/index.ejs", { allListings });
+
+    const { search } = req.query;
+
+    let allListings;
+
+    if (search) {
+        allListings = await Listing.find({
+            $or: [
+                { title: { $regex: search, $options: "i" } },
+                { location: { $regex: search, $options: "i" } },
+                { country: { $regex: search, $options: "i" } },
+            ],
+        });
+    } else {
+        allListings = await Listing.find({});
+    }
+
+    res.render("listings/index.ejs", { allListings, search });
 };
 
 //NEW 
@@ -30,21 +46,22 @@ module.exports.showListing = async (req, res) => {
                 path: "author",
             },
         })
-          .populate("owner");
+        .populate("owner");
 
     if (!listing) {
         req.flash("error", "Listing you requested for does not exits!");
         return res.redirect("/listings");
     }
 
-//     console.log(listing.geometry);
-// console.log(listing.geometry.coordinates);
+    //     console.log(listing.geometry);
+    // console.log(listing.geometry.coordinates);
 
-    res.render("listings/show.ejs", { listing ,
-         geoApiKey: process.env.GEOAPIFY_API_KEY,
+    res.render("listings/show.ejs", {
+        listing,
+        geoApiKey: process.env.GEOAPIFY_API_KEY,
     });
-    
-   
+
+
 };
 
 //EDIT
@@ -58,11 +75,11 @@ module.exports.renderEditForm = async (req, res) => {
     const listing = await Listing.findById(id);
 
     let originalImageUrl = listing.image.url;
-     originalImageUrl  = originalImageUrl.replace("/upload", "/upload/w_250");
+    originalImageUrl = originalImageUrl.replace("/upload", "/upload/w_250");
     //  console.log(originalImageUrl);
-    
 
-    res.render("listings/edit.ejs", { listing ,  originalImageUrl});
+
+    res.render("listings/edit.ejs", { listing, originalImageUrl });
 };
 
 //CREATE
@@ -120,11 +137,11 @@ module.exports.updateListing = async (req, res) => {
         { ...req.body.listing }
     );
 
-    if(typeof req.file !== "undefined" ){
-    let url = req.file.path;
-let filename = req.file.filename;
-listing.image = {url, filename};
-await listing.save();
+    if (typeof req.file !== "undefined") {
+        let url = req.file.path;
+        let filename = req.file.filename;
+        listing.image = { url, filename };
+        await listing.save();
     }
 
     req.flash("success", " Listing Updated!");
