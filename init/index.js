@@ -2,27 +2,27 @@ const mongoose = require("mongoose");
 const initData = require("./data.js");
 const Listing = require("../models/listing.js");
 const axios = require("axios");
-
 const path = require("path");
 
 require("dotenv").config({
     path: path.join(__dirname, "../.env"),
 });
 
-const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
+const MONGO_URL = process.env.ATLASDB_URL;
+
+// Connect to MongoDB
+async function main() {
+    await mongoose.connect(MONGO_URL);
+}
 
 main()
     .then(() => {
-        console.log("connected to DB");
+        console.log("✅ Connected to MongoDB Atlas");
         initDB();
     })
     .catch((err) => {
         console.log(err);
-    })
-
-async function main() {
-    await mongoose.connect(MONGO_URL);
-}
+    });
 
 const initDB = async () => {
     try {
@@ -33,7 +33,6 @@ const initDB = async () => {
         for (let obj of initData.data) {
 
             const address = `${obj.location}, ${obj.country}`;
-            // console.log("Geocoding:", address);
 
             const response = await axios.get(
                 "https://api.geoapify.com/v1/geocode/search",
@@ -64,8 +63,10 @@ const initDB = async () => {
 
         await Listing.insertMany(listings);
 
-        console.log("Data was initialized");
+        console.log("✅ Data initialized");
     } catch (err) {
         console.error(err);
+    } finally {
+        mongoose.connection.close();
     }
 };
