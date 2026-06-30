@@ -1,5 +1,5 @@
-if (process.env.NODE_ENV != "production") {
-    require('dotenv').config();
+if (process.env.NODE_ENV !== "production") {
+    require("dotenv").config();
 }
 
 const express = require("express");
@@ -8,159 +8,170 @@ const mongoose = require("mongoose");
 const path = require("path");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
-const ExpressError = require("./utils/ExpressError");
-// const { MongoStore } = require("connect-mongo");
 const session = require("express-session");
 const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
-const User = require("./models/user.js");
 
-const listingRouter = require("./routes/listing.js");
-const reviewRouter = require("./routes/review.js");
-const userRouter = require("./routes/user.js");
-// console.log(require("connect-mongo"));
+const ExpressError = require("./utils/ExpressError");
+const User = require("./models/user");
 
+const listingRouter = require("./routes/listing");
+const reviewRouter = require("./routes/review");
+const userRouter = require("./routes/user");
+
+// =======================
+// DATABASE CONNECTION
+// =======================
 
 const dbUrl = process.env.ATLASDB_URL;
-console.log("ATLASDB_URL:", process.env.ATLASDB_URL);
-console.log("SECRET exists:", !!process.env.SECRET);
 
-async function main() {
-    await mongoose.connect(dbUrl);
-    console.log("✅ Connected to MongoDB Atlas");
+console.log("=================================");
+console.log("NODE_ENV:", process.env.NODE_ENV);
+console.log("PORT:", process.env.PORT);
+console.log("ATLASDB_URL exists:", !!dbUrl);
+console.log("SECRET exists:", !!process.env.SECRET);
+console.log("=================================");
+
+async function connectDB() {
+    try {
+        await mongoose.connect(dbUrl);
+
+        console.log("✅ Connected to MongoDB Atlas");
+        console.log("Database:", mongoose.connection.name);
+        console.log("Host:", mongoose.connection.host);
+    } catch (err) {
+        console.error("❌ MongoDB Connection Failed");
+        console.error(err);
+        process.exit(1);
+    }
 }
 
-main().catch((err) => {
-    console.error("❌ MongoDB Connection Error:");
-    console.error(err);
+connectDB();
+
+mongoose.connection.on("connected", () => {
+    console.log("🟢 Mongoose Connected");
 });
+
+mongoose.connection.on("error", (err) => {
+    console.log("🔴 Mongoose Error");
+    console.log(err);
+});
+
+mongoose.connection.on("disconnected", () => {
+    console.log("🟡 Mongoose Disconnected");
+});
+
+// =======================
+// EXPRESS CONFIG
+// =======================
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
+app.engine("ejs", ejsMate);
+
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
-app.engine('ejs', ejsMate);
 app.use(express.static(path.join(__dirname, "public")));
-app.use((req, res, next) => {
-    res.locals.search = req.query.search || "";
-    next();
-});
 
-// const store = MongoStore.create({
-//     mongoUrl: dbUrl,
-//     crypto: {
-//         secret:process.env.SECRET,
-//     },
-//     touchAfter: 24 * 3600,
-// });
+// =======================
+// SESSION
+// =======================
 
-// store.on("error", (err) => {
-//     console.log("Mongo Session Store Error:", err);
-// });
-
-
-const sessionOption = {
+const sessionOptions = {
     secret: process.env.SECRET,
     resave: false,
     saveUninitialized: false,
     cookie: {
-        expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
-        maxAge: 7 * 24 * 60 * 60 * 1000,
         httpOnly: true,
+        maxAge: 1000 * 60 * 60 * 24 * 7,
+        expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
     },
 };
 
-
-const sessionOption = {
-    store,
-    secret: process.env.SECRET,
-    resave: false,
-    saveUninitialized: true,
-    cookie: {
-        expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-        httpOnly: true,
-    },
-};
-
-// app.get("/", (req, res) => {
-//     res.send("Hi, I am root");
-// });
-
-
-app.use(session(sessionOption));
+app.use(session(sessionOptions));
 app.use(flash());
+
+// =======================
+// PASSPORT
+// =======================
 
 app.use(passport.initialize());
 app.use(passport.session());
+
 passport.use(new LocalStrategy(User.authenticate()));
 
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
-
+// =======================
+// GLOBAL VARIABLES
+// =======================
 
 app.use((req, res, next) => {
     res.locals.success = req.flash("success");
     res.locals.error = req.flash("error");
     res.locals.currUser = req.user;
+    res.locals.search = req.query.search || "";
     next();
 });
 
+// =======================
+// REQUEST LOGGER
+// =======================
 
-// app.get("/demouser", async (req, res) => {
-// let fakeUser = new User({
-//     email: "student@gmail.com",
-//     username:"delta-student"
-// });
+app.use((req, res, next) => {
+    console.log(`${req.method} ${req.originalUrl}`);
+    next();
+});
 
-//  let registerUser = await User.register(fakeUser, "helloworld");
-//  res.send(registerUser);
-// } );
-
-
-
-
-
-
-
+// =======================
+// ROUTES
+// =======================
 
 app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
 app.use("/", userRouter);
 
+// =======================
+// TEST ROUTE
+// =======================
 
 app.get("/test", (req, res) => {
     throw new Error("Testing Error");
 });
 
+// =======================
+// 404
+// =======================
 
 app.use((req, res, next) => {
     next(new ExpressError(404, "Page Not Found"));
 });
 
-// app.use((err, req, res, next) => {
-//     let { statusCode = 500, message = "Something went wrong!" } = err;
-
-//     err.statusCode = statusCode;
-//     err.message = message;
-
-//     res.status(statusCode).render("error", { message });
-// });
-
+// =======================
+// ERROR HANDLER
+// =======================
 
 app.use((err, req, res, next) => {
     console.error("========== EXPRESS ERROR ==========");
-    console.error(err);
+    console.error("URL:", req.originalUrl);
+    console.error("METHOD:", req.method);
+    console.error(err.stack);
     console.error("===================================");
 
-    let { statusCode = 500, message = "Something went wrong!" } = err;
+    const statusCode = err.statusCode || 500;
+    const message = err.message || "Something went wrong!";
 
     res.status(statusCode).render("error", { message });
 });
+
+// =======================
+// SERVER
+// =======================
+
 const PORT = process.env.PORT || 8080;
 
 app.listen(PORT, () => {
-    console.log(`Server is listening on port ${PORT}`);
+    console.log(`🚀 Server listening on port ${PORT}`);
 });
