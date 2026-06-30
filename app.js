@@ -47,7 +47,7 @@ async function connectDB() {
     }
 }
 
-connectDB();
+
 
 mongoose.connection.on("connected", () => {
     console.log("🟢 Mongoose Connected");
@@ -175,6 +175,12 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 8080;
 
-app.listen(PORT, () => {
-    console.log(`🚀 Server listening on port ${PORT}`);
-});
+async function startServer() {
+    await connectDB();
+
+    app.listen(PORT, () => {
+        console.log(`🚀 Server listening on port ${PORT}`);
+    });
+}
+
+startServer();
